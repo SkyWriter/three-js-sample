@@ -1,6 +1,7 @@
 // Import dependencies
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { GLTFLoader  } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 export default function ThreeEntryPoint(sceneRef) {
   // Create Scene
@@ -33,27 +34,20 @@ export default function ThreeEntryPoint(sceneRef) {
     emissive: 0x111111,
     specular: 0xffffff,
     metalness: 1,
-    roughness: 0.55,
+    roughness: 0.55
   });
 
-  // Create the mesh, scale it and add it to the scene
-  const mesh = new THREE.Mesh(geometry, material);
-
-  mesh.scale.x = 0.1;
-  mesh.scale.y = 0.1;
-  mesh.scale.z = 0.1;
-
-  scene.add(mesh);
-
   // Create lights, position them, and add them to the scene
-  const frontSpot = new THREE.SpotLight(0xeeeece);
-  const frontSpot2 = new THREE.SpotLight(0xddddce);
+  const frontSpot = new THREE.SpotLight(0xeeeece, 2);
+  const frontSpot2 = new THREE.SpotLight(0xddddce, 2);
 
   frontSpot.position.set(1000, 1000, 1000);
   frontSpot2.position.set(-500, -500, -500);
 
   scene.add(frontSpot);
   scene.add(frontSpot2);
+
+  var mesh;
 
   // Create an animate function, which will allow you to render your scene and define any movements
   const animate = function () {
@@ -66,7 +60,15 @@ export default function ThreeEntryPoint(sceneRef) {
     renderer.render(scene, camera);
   };
 
-  // Call the animate function
-  animate();
+  {
+    const loader = new GLTFLoader();
 
+    loader.load( '/dick.glb', function ( gltf ) {
+      mesh = gltf.scene.children[0];
+      mesh.scale.set( 0.02, 0.02, 0.02 );
+      scene.add(mesh);
+      animate();
+    } );
+
+  }
 }
